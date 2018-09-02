@@ -79,16 +79,17 @@
 
 
 
-<meta name="description" content="Statistics, Machine Learning">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Zerui&#39;s blog">
-<meta property="og:url" content="http://yoursite.com/index.html">
+<meta name="description" content="最近在做很多矩阵的计算, 用到了 commutation matrix.  定义如下:  设 $A \in \mathbb{R}^{m \times n},$ 则对应 commutation matrix $K^{(m, n)}$ 满足: $$ K^{(m, n)} \mathrm{vec}(A) = \mathrm{vec}(A^T).$$  它的计算实际上也非常简单, Wikipedia 上给">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Fast Commutation Matrix Computing">
+<meta property="og:url" content="http://yoursite.com/2018/09/02/Fast-Commutation-Matrix-Computing/index.html">
 <meta property="og:site_name" content="Zerui&#39;s blog">
-<meta property="og:description" content="Statistics, Machine Learning">
+<meta property="og:description" content="最近在做很多矩阵的计算, 用到了 commutation matrix.  定义如下:  设 $A \in \mathbb{R}^{m \times n},$ 则对应 commutation matrix $K^{(m, n)}$ 满足: $$ K^{(m, n)} \mathrm{vec}(A) = \mathrm{vec}(A^T).$$  它的计算实际上也非常简单, Wikipedia 上给">
 <meta property="og:locale" content="ch/en">
+<meta property="og:updated_time" content="2018-09-02T06:47:39.518Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Zerui&#39;s blog">
-<meta name="twitter:description" content="Statistics, Machine Learning">
+<meta name="twitter:title" content="Fast Commutation Matrix Computing">
+<meta name="twitter:description" content="最近在做很多矩阵的计算, 用到了 commutation matrix.  定义如下:  设 $A \in \mathbb{R}^{m \times n},$ 则对应 commutation matrix $K^{(m, n)}$ 满足: $$ K^{(m, n)} \mathrm{vec}(A) = \mathrm{vec}(A^T).$$  它的计算实际上也非常简单, Wikipedia 上给">
 
 
 
@@ -118,13 +119,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/"/>
+  <link rel="canonical" href="http://yoursite.com/2018/09/02/Fast-Commutation-Matrix-Computing/"/>
 
 
 
 
 
-  <title>Zerui's blog</title>
+  <title>Fast Commutation Matrix Computing | Zerui's blog</title>
   
 
 
@@ -143,8 +144,7 @@
     
   
 
-  <div class="container sidebar-position-left 
-  page-home">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -227,9 +227,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
 
@@ -259,9 +259,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/09/02/Fast-Commutation-Matrix-Computing/" itemprop="url">Fast Commutation Matrix Computing</a></h1>
+          <h1 class="post-title" itemprop="name headline">Fast Commutation Matrix Computing</h1>
         
 
         <div class="post-meta">
@@ -311,9 +309,7 @@
       
 
       
-        
-          
-            <p>最近在做很多矩阵的计算, 用到了 <a href="https://en.wikipedia.org/wiki/Commutation_matrix" target="_blank" rel="noopener">commutation matrix</a>. </p>
+        <p>最近在做很多矩阵的计算, 用到了 <a href="https://en.wikipedia.org/wiki/Commutation_matrix" target="_blank" rel="noopener">commutation matrix</a>. </p>
 <p>定义如下:</p>
 <blockquote>
 <p>设 $A \in \mathbb{R}^{m \times n},$ 则对应 commutation matrix $K^{(m, n)}$ 满足: $$ K^{(m, n)} \mathrm{vec}(A) = \mathrm{vec}(A^T).$$</p>
@@ -329,8 +325,6 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Both the two functions give the right anser.</span><br><span class="line">The benchmark function costs 215.087013 seconds and 191.578125 MiB of memory.</span><br><span class="line">The sparse matrix function costs 0.070076 seconds and 48.867188 MiB of memory.</span><br></pre></td></tr></table></figure>
 <p>可以看到速度的提升还是非常明显的.</p>
 
-          
-        
       
     </div>
     
@@ -347,12 +341,12 @@
       
 
       
+      
+      
 
       
 
       
-      
-        <div class="post-eof"></div>
       
     </footer>
   </div>
@@ -362,10 +356,11 @@
   </article>
 
 
-    
-  </section>
 
-  
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -373,6 +368,10 @@
 
 
           
+
+  
+
+
 
         </div>
         
@@ -576,6 +575,10 @@
 
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
