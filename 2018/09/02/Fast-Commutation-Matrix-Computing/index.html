@@ -6,10 +6,10 @@
 
 
 <html class="theme-next pisces use-motion" lang="ch/en">
-<head>
-  <meta charset="UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="theme-color" content="#222">
 
 
@@ -20,8 +20,8 @@
 
 
 
-<meta http-equiv="Cache-Control" content="no-transform" />
-<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
 
 
 
@@ -40,7 +40,7 @@
 
   
   
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
 
 
 
@@ -48,9 +48,9 @@
 
 
 
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
 
-<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
 
 
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Commutation matrix," />
+  <meta name="keywords" content="Commutation matrix,">
 
 
 
@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="最近在做很多矩阵的计算, 用到了 commutation matrix.  定义如下:  设 $A \in \mathbb{R}^{m \times n},$ 则对应 commutation matrix $K^{(m, n)}$ 满足: $$ K^{(m, n)} \mathrm{vec}(A) = \mathrm{vec}(A^T).$$  它的计算实际上也非常简单, Wikipedia 上给">
+<meta name="description" content="最近在做很多矩阵的计算, 用到了 commutation matrix.  定义如下:  设 $A \in \mathbb{R}^{m \times n},$ 则对应 commutation matrix $K^{(m, n)}$ 满足: K^{(m, n)} \mathrm{vec}(A) = \mathrm{vec}(A^T).  它的计算实际上也非常简单, Wikipedia 上给出了公式:">
 <meta name="keywords" content="Commutation matrix">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Fast Commutation Matrix Computing">
 <meta property="og:url" content="http://yoursite.com/2018/09/02/Fast-Commutation-Matrix-Computing/index.html">
 <meta property="og:site_name" content="Zerui&#39;s blog">
-<meta property="og:description" content="最近在做很多矩阵的计算, 用到了 commutation matrix.  定义如下:  设 $A \in \mathbb{R}^{m \times n},$ 则对应 commutation matrix $K^{(m, n)}$ 满足: $$ K^{(m, n)} \mathrm{vec}(A) = \mathrm{vec}(A^T).$$  它的计算实际上也非常简单, Wikipedia 上给">
+<meta property="og:description" content="最近在做很多矩阵的计算, 用到了 commutation matrix.  定义如下:  设 $A \in \mathbb{R}^{m \times n},$ 则对应 commutation matrix $K^{(m, n)}$ 满足: K^{(m, n)} \mathrm{vec}(A) = \mathrm{vec}(A^T).  它的计算实际上也非常简单, Wikipedia 上给出了公式:">
 <meta property="og:locale" content="ch/en">
-<meta property="og:updated_time" content="2018-09-02T07:35:51.686Z">
+<meta property="og:updated_time" content="2019-01-25T01:15:26.184Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Fast Commutation Matrix Computing">
-<meta name="twitter:description" content="最近在做很多矩阵的计算, 用到了 commutation matrix.  定义如下:  设 $A \in \mathbb{R}^{m \times n},$ 则对应 commutation matrix $K^{(m, n)}$ 满足: $$ K^{(m, n)} \mathrm{vec}(A) = \mathrm{vec}(A^T).$$  它的计算实际上也非常简单, Wikipedia 上给">
+<meta name="twitter:description" content="最近在做很多矩阵的计算, 用到了 commutation matrix.  定义如下:  设 $A \in \mathbb{R}^{m \times n},$ 则对应 commutation matrix $K^{(m, n)}$ 满足: K^{(m, n)} \mathrm{vec}(A) = \mathrm{vec}(A^T).  它的计算实际上也非常简单, Wikipedia 上给出了公式:">
 
 
 
@@ -120,7 +120,7 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2018/09/02/Fast-Commutation-Matrix-Computing/"/>
+  <link rel="canonical" href="http://yoursite.com/2018/09/02/Fast-Commutation-Matrix-Computing/">
 
 
 
@@ -154,7 +154,7 @@
     
 
     <div class="custom-logo-site-title">
-      <a href="/"  class="brand" rel="start">
+      <a href="/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">Zerui's blog</span>
         <span class="logo-line-after"><i></i></span>
@@ -184,7 +184,7 @@
         <li class="menu-item menu-item-home">
           <a href="/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
             
             Home
           </a>
@@ -194,7 +194,7 @@
         <li class="menu-item menu-item-archives">
           <a href="/archives/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
             
             Archives
           </a>
@@ -204,7 +204,7 @@
         <li class="menu-item menu-item-about">
           <a href="/About" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
             
             About
           </a>
@@ -247,7 +247,7 @@
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Zerui Tao">
-      <meta itemprop="description" content="">
+      <meta itemprop="description" content>
       <meta itemprop="image" content="/images/avatar.gif">
     </span>
 
@@ -313,9 +313,10 @@
         <p>最近在做很多矩阵的计算, 用到了 <a href="https://en.wikipedia.org/wiki/Commutation_matrix" target="_blank" rel="noopener">commutation matrix</a>. </p>
 <p>定义如下:</p>
 <blockquote>
-<p>设 $A \in \mathbb{R}^{m \times n},$ 则对应 commutation matrix $K^{(m, n)}$ 满足: $$ K^{(m, n)} \mathrm{vec}(A) = \mathrm{vec}(A^T).$$</p>
+<p>设 $A \in \mathbb{R}^{m \times n},$ 则对应 commutation matrix $K^{(m, n)}$ 满足: <script type="math/tex">K^{(m, n)} \mathrm{vec}(A) = \mathrm{vec}(A^T).</script></p>
 </blockquote>
-<p>它的计算实际上也非常简单, Wikipedia 上给出了公式:<br>$$ K^{(m, n)} = \sum_{i=1}^{m}\sum_{j=1}^{n} (e_{m, i} e_{n, j}^T)\otimes (e_{n, j} e_{m, i}^T),$$<br>其中 $e_{m, i}$ 是长度为 $m$ 且在第 $i$ 个位置为 $1,$ 其余位置为 $0$ 的基向量.</p>
+<p>它的计算实际上也非常简单, Wikipedia 上给出了公式:</p>
+<script type="math/tex; mode=display">K^{(m, n)} = \sum_{i=1}^{m}\sum_{j=1}^{n} (e_{m, i} e_{n, j}^T)\otimes (e_{n, j} e_{m, i}^T),</script><p>其中 $e_{m, i}$ 是长度为 $m$ 且在第 $i$ 个位置为 $1,$ 其余位置为 $0$ 的基向量.</p>
 <p>在 <code>R</code> 中有一个 <code>matrixclac</code> 包提供了计算的函数, 但实际算起来非常慢. 看了一下<a href="https://github.com/cran/matrixcalc" target="_blank" rel="noopener">源码</a>, 作者是利用公式里的矩阵乘法做的. 实际上如果直接用矩阵乘法去实现的话, 不管是复杂度还是内存的占用都是不可接受的. </p>
 <p>很容易看出该矩阵是一个稀疏的初等变换矩阵, 于是考虑用 <code>scipy.sparse</code> 中的稀疏矩阵可以实现快速且占用内存小的计算方法.</p>
 <p>考虑到每次的循环中 $(e_{m, i} e_{n, j}^T)\otimes (e_{n, j} e_{m, i}^T)$ 部分， 实际上是一个除位置 $[(i-1) \cdot n+j-1, (j-1) \cdot m + i - 1]$ 为 $1$, 其余都为 $0$ 的矩阵. 具体实现如下:</p>
@@ -354,6 +355,22 @@
       
       
 
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/03/29/TuckerComplete/" rel="prev" title="TuckerComplete">
+                TuckerComplete <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
       
 
       
@@ -427,7 +444,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-count">2</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -440,7 +457,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-count">2</span>
                   <span class="site-state-item-name">tags</span>
                 
               </div>
@@ -503,7 +520,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

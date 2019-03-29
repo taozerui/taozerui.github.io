@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="ch/en">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="tensor decomposition; tensor completion.,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Tucker Decomposition在做矩阵补全的时候, 一个常用的算法是基于 matrix factorization. 即假设我们的真实矩阵服从某个 low-rank 分解结构. 这个思想很自然地可以推广到 tensor 上. 对于 tensor, 我们常用的分解有 CP decomposition [1], Tucker decomposition [1], 以及 tensor-tr">
+<meta name="keywords" content="tensor decomposition; tensor completion.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Tensor Completion by Tucker Decomposition">
+<meta property="og:url" content="http://yoursite.com/2019/03/28/TuckerComplete/index.html">
+<meta property="og:site_name" content="Zerui&#39;s blog">
+<meta property="og:description" content="Tucker Decomposition在做矩阵补全的时候, 一个常用的算法是基于 matrix factorization. 即假设我们的真实矩阵服从某个 low-rank 分解结构. 这个思想很自然地可以推广到 tensor 上. 对于 tensor, 我们常用的分解有 CP decomposition [1], Tucker decomposition [1], 以及 tensor-tr">
+<meta property="og:locale" content="ch/en">
+<meta property="og:image" content="http://yoursite.com/2019/03/28/TuckerComplete/TuckerComplete/tucker_iter.png">
+<meta property="og:updated_time" content="2019-03-29T03:23:34.459Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Tensor Completion by Tucker Decomposition">
+<meta name="twitter:description" content="Tucker Decomposition在做矩阵补全的时候, 一个常用的算法是基于 matrix factorization. 即假设我们的真实矩阵服从某个 low-rank 分解结构. 这个思想很自然地可以推广到 tensor 上. 对于 tensor, 我们常用的分解有 CP decomposition [1], Tucker decomposition [1], 以及 tensor-tr">
+<meta name="twitter:image" content="http://yoursite.com/2019/03/28/TuckerComplete/TuckerComplete/tucker_iter.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/03/28/TuckerComplete/">
+
+
+
+
+
+  <title>Tensor Completion by Tucker Decomposition | Zerui's blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="ch/en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Zerui's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">呆</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/About" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
+            
+            About
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/28/TuckerComplete/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Zerui Tao">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Zerui's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Tensor Completion by Tucker Decomposition</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-28T10:40:23+08:00">
+                2019-03-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+<h1 id="Tucker-Decomposition"><a href="#Tucker-Decomposition" class="headerlink" title="Tucker Decomposition"></a>Tucker Decomposition</h1><p>在做矩阵补全的时候, 一个常用的算法是基于 matrix factorization. 即假设我们的真实矩阵服从某个 low-rank 分解结构. 这个思想很自然地可以推广到 tensor 上. 对于 tensor, 我们常用的分解有 CP decomposition [1], Tucker decomposition [1], 以及 tensor-train decomposition [2] 等.</p>
+<p>假设有一个三阶张量 $\mathcal{X}\in \mathbb{R}^{I\times J\times K},$ 其 Tucker 分解形式为</p>
+<script type="math/tex; mode=display">\mathcal{X} = \sum_{p=1}^{P}\sum_{q=1}^{Q}\sum_{r=1}^{R} g_{pqr} a_p \circ b_q \circ c_r \tag{1.1},</script><p>其中 $a_p \in \mathbb{R}^I, b_q \in \mathbb{R}^J, c_r \in \mathbb{R}^K,$ $a_p \circ b_q \circ c_r$ 为向量的 <a href="https://en.wikipedia.org/wiki/Outer_product" target="_blank" rel="noopener">outer product</a>, $P, Q, R$ 为 Tucker ranks. 将 $a_p, b_q, c_r$ 作为列向量叠成矩阵 $A\in\mathbb{R}^{I\times P},B\in\mathbb{R}^{J\times Q},C\in\mathbb{R}^{K\times R}$ 后, 可以写为如下 Tucker format</p>
+<script type="math/tex; mode=display">\mathcal{X} = \mathcal{G} \times_1 A \times_2 B \times_3 C \tag{1.2},</script><p>其中 $\times_n$ 为张量对矩阵的 mode-n product [1]. 推广到 N 阶张量</p>
+<script type="math/tex; mode=display">\mathcal{X} = \mathcal{G} \times_1 A^{(1)} \cdots \times_N A^{(N)} = [\![G; A^{(1)}, \dots, A^{(N)}]\!] \tag{1.3}.</script><p>可以看到原张量中的元素个数为 $\mathcal{O}(d^N)$, 而写为 Tucker 形式后, 元素个数降为 $\mathcal{O}(r^N + dNr),$ 当 Tucker rank $r$ 取得很小时可以显著减少所需的元素数量. 在实际应用中, 往往选择较小的 Tucker rank, 求得原张量 $\mathcal{X}$ 的一个 low-rank 近似.</p>
+<p>在求解 Tucker decomposition 时, 比较常用的有 HOSVD [1], HOOI [1]. 此外, 也可以用梯度下降等方法.</p>
+<h1 id="Tensor-Completion"><a href="#Tensor-Completion" class="headerlink" title="Tensor Completion"></a>Tensor Completion</h1><p>现在假设有一个 N-way 张量 $\mathcal{X} \in \mathbb{R}^{I_1\times \cdots \times I_N},$ 观测到的张量记为 $\mathcal{Y},$ 且只观测到一部分元素, 记观测到的下标集合为 $\mathcal{S}.$ 且每个元素满足</p>
+<script type="math/tex; mode=display">\mathcal{Y}(i_1, \dots, i_N) = \mathcal{X}(i_1, \dots, i_N) + \mathcal{E}(i_1, \dots, i_N) \tag{2.1},</script><p>其中 $(i_1, \dots, i_N) \in \mathcal{S},$ 噪声 $\mathcal{E}(i_1, \dots, i_N) \sim \mathcal{N}(0, \sigma^2).$</p>
+<p>假设真实的张量 $\mathcal{X}$ 为 low-rank, 且满足 Tucker format, 在噪声满足 Gauss 分布假设下, 损失函数可以写为</p>
+<script type="math/tex; mode=display">L(G, A^{(1)}, \dots, A^{(N)}) = \sum_{(i_1, \dots, i_N) \in \mathcal{S}}(\mathcal{Y}(i_1, \dots, i_N) - [\![G; A^{(1)}, \dots, A^{(N)}]\!](i_1, \dots, i_N))^2\tag{2.1}.</script><p>然后可以用梯度下降进行求解. 在做分解的过程中, 优化问题往往是非凸的, 分解结果也不唯一. 通常会采用 Alternating Least Square (ALS) 算法, 即在每一步中针对一个 factor $A^{(i)}$ 作优化, 固定其它的 factor, 此时每一个子问题是凸的. 由于我们只观测到了一部分下标, 在对 (2.1) 式求导时只能对每一个观测到的下标分别求导, 这样显然是效率比较的低的.</p>
+<p>为了让损失函数直接对矩阵求导, 定义 mask tensor $\mathcal{W} \in \mathbb{R}^{I_i\times, \dots, I_N},$ 其元素满足</p>
+<script type="math/tex; mode=display">\mathcal{W}(i_1, \dots, i_N) = \left\{
+    \begin{aligned}
+    1, \quad &(i_1, \dots, i_N) \in \mathcal{S}\\
+    0, \quad &else\\
+    \end{aligned}
+    \right.
+\tag{2.2}</script><p>此时损失函数 (2.1) 可写为</p>
+<script type="math/tex; mode=display">L(G, A^{(1)}, \dots, A^{(N)}) = ||\mathcal{W} \ast (\mathcal{Y}(i_1, \dots, i_N) - [\![G; A^{(1)}, \dots, A^{(N)}]\!])||^2_F \tag{2.3},</script><p>其中 $A \ast B$ 表示 <a href="https://en.wikipedia.org/wiki/Hadamard_product_(matrices" target="_blank" rel="noopener">Hadamard product</a>), $||\cdot||_F^2$ 表示 <a href="https://en.wikipedia.org/wiki/Matrix_norm" target="_blank" rel="noopener">Frobenius norm</a>. 直接对 (2.3) 求导得 [3] </p>
+<script type="math/tex; mode=display">
+\begin{equation}\begin{split}
+ \bigtriangledown_{A^{(n)}}L(G, A(1), \dots, A^{(N)} = 2 \left\{[\mathcal{W}\ast(\mathcal{G}\times_1 A^{(1)}\dots\times_N A^{(N)} - \mathcal{Y}]_{(n)} \cdot \\
+ [(\mathcal{G} \times_1 A^{(1)}\cdots \times_{n-1} A^{(n-1)} \times_{n+1} A^{(n+1)} \cdots \times_N A^{(N)})_{(n)}]^T
+ \right\},
+\end{split}\end{equation} \tag{2.4}</script><p>以及</p>
+<script type="math/tex; mode=display">
+\begin{equation}\begin{split}
+ \bigtriangledown_{\mathcal{G}}L(G, A(1), \dots, A^{(N)} = &2[\mathcal{W}\ast(\mathcal{G}\times_1 A^{(1)}\dots\times_N A^{(N)} - \mathcal{Y})]\\
+ &\times_1 A^{(1)}\cdots \times_N A^{(N)},
+\end{split}\end{equation} \tag{2.5}</script><p>其中下标 $(\cdot)_{(n)}$ 表示 mode-n matricization [1]. 利用 (2.4) 与 (2.5), 可以利用梯度下降来求解问题 (2.3).</p>
+<p>我们在 <a href="https://archive.ics.uci.edu/ml/datasets/Restaurant+%26+consumer+data" target="_blank" rel="noopener">The Restaurant &amp; Consumer Dataset</a> 上进行实验, 代码见<a href="https://github.com/taozerui/tensorCom/blob/master/generalized_tucker/code/completion.py" target="_blank" rel="noopener">这里</a>. 该数据集包含了 138 位用户对 130 个餐馆的评分, 评分内容包括 rating, food rating, service rating 三个方面, 总共有 1161 条评分记录. 将评分 binary 后, 分割 0.85 条评分作为训练, 剩下的测试. 取 Tucker rank 为 $(4, 4, 2)$, learning rate 为 $0.0001,$ 算法收敛过程如图.</p>
+<p><img src="./TuckerComplete/tucker_iter.png" alt="如图">.</p>
+<p>测试集上的误差在 <code>0.15</code> 左右.</p>
+<h1 id="Discussion"><a href="#Discussion" class="headerlink" title="Discussion"></a>Discussion</h1><p>既然 ALS 也是梯度下降过程, 自然可以考虑利用 Nesterov algorithm 进行加速. 不过由于 Tucker decomposition 问题是非凸的, 所以直接用效果可能不好. [4] 中提出了一个解决方案.</p>
+<p>另外上述分解是在 Gaussian 假设下做的, 采用平方损失. 实际上在 recommender system 中, 更符合实际的假设是 Poisson, 以及 Bernoulli 分布. 关于 exponential family 下的分解参考 [5].</p>
+<h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><p>[1] Kolda T G, Bader B W. Tensor decompositions and applications[J]. SIAM review, 2009, 51(3): 455-500.</p>
+<p>[2] Oseledets I V. Tensor-train decomposition[J]. SIAM Journal on Scientific Computing, 2011, 33(5): 2295-2317.</p>
+<p>[3] Filipovic M, Jukic A. Tucker factorization with missing data with application to low-nrank tensor completion. Multidim. Syst[J]. Sign. P, 2013.</p>
+<p>[4] Mitchell D, Ye N, De Sterck H. Nesterov Acceleration of Alternating Least Squares for Canonical Tensor Decomposition[J]. arXiv preprint arXiv:1810.05846, 2018.</p>
+<p>[5] Wang M, Li L. Learning from Binary Multiway Data: Probabilistic Tensor Decomposition and its Statistical Optimality[J]. arXiv preprint arXiv:1811.05076, 2018.</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/tensor-decomposition-tensor-completion/" rel="tag"># tensor decomposition; tensor completion.</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/09/02/Fast-Commutation-Matrix-Computing/" rel="next" title="Fast Commutation Matrix Computing">
+                <i class="fa fa-chevron-left"></i> Fast Commutation Matrix Computing
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Zerui Tao</p>
+              <p class="site-description motion-element" itemprop="description">Statistics, Machine Learning</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/taozerui" target="_blank" title="Github">
+                      
+                        <i class="fa fa-fw fa-globe"></i>Github</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Tucker-Decomposition"><span class="nav-number">1.</span> <span class="nav-text">Tucker Decomposition</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Tensor-Completion"><span class="nav-number">2.</span> <span class="nav-text">Tensor Completion</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Discussion"><span class="nav-number">3.</span> <span class="nav-text">Discussion</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#References"><span class="nav-number">4.</span> <span class="nav-text">References</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zerui Tao</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
