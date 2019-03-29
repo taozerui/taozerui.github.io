@@ -79,19 +79,19 @@
 
 
 
-<meta name="description" content="Tucker Decomposition在做矩阵补全的时候, 一个常用的算法是基于 matrix factorization. 即假设我们的真实矩阵服从某个 low-rank 分解结构. 这个思想很自然地可以推广到 tensor 上. 对于 tensor, 我们常用的分解有 CP decomposition [1], Tucker decomposition [1], 以及 tensor-tr">
+<meta name="description" content="Tucker Decomposition在做矩阵补全的时候, 一个常用的算法是基于 matrix factorization. 即假设我们的真实矩阵服从某个 low-rank 分解结构. 这个思想很自然地可以推广到 tensor 上. 对于 tensor, 我们常用的分解有 CP decomposition [1], Tucker decomposition [1], 以及 tensor-trai">
 <meta name="keywords" content="Tensor decomposition; Tensor completion.">
 <meta property="og:type" content="article">
 <meta property="og:title" content="TuckerComplete">
 <meta property="og:url" content="http://yoursite.com/2019/03/29/TuckerComplete/index.html">
 <meta property="og:site_name" content="Zerui&#39;s blog">
-<meta property="og:description" content="Tucker Decomposition在做矩阵补全的时候, 一个常用的算法是基于 matrix factorization. 即假设我们的真实矩阵服从某个 low-rank 分解结构. 这个思想很自然地可以推广到 tensor 上. 对于 tensor, 我们常用的分解有 CP decomposition [1], Tucker decomposition [1], 以及 tensor-tr">
+<meta property="og:description" content="Tucker Decomposition在做矩阵补全的时候, 一个常用的算法是基于 matrix factorization. 即假设我们的真实矩阵服从某个 low-rank 分解结构. 这个思想很自然地可以推广到 tensor 上. 对于 tensor, 我们常用的分解有 CP decomposition [1], Tucker decomposition [1], 以及 tensor-trai">
 <meta property="og:locale" content="ch/en">
 <meta property="og:image" content="http://yoursite.com/2019/03/29/TuckerComplete/tucker_iter.png">
-<meta property="og:updated_time" content="2019-03-29T04:17:38.023Z">
+<meta property="og:updated_time" content="2019-03-29T05:13:48.732Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="TuckerComplete">
-<meta name="twitter:description" content="Tucker Decomposition在做矩阵补全的时候, 一个常用的算法是基于 matrix factorization. 即假设我们的真实矩阵服从某个 low-rank 分解结构. 这个思想很自然地可以推广到 tensor 上. 对于 tensor, 我们常用的分解有 CP decomposition [1], Tucker decomposition [1], 以及 tensor-tr">
+<meta name="twitter:description" content="Tucker Decomposition在做矩阵补全的时候, 一个常用的算法是基于 matrix factorization. 即假设我们的真实矩阵服从某个 low-rank 分解结构. 这个思想很自然地可以推广到 tensor 上. 对于 tensor, 我们常用的分解有 CP decomposition [1], Tucker decomposition [1], 以及 tensor-trai">
 <meta name="twitter:image" content="http://yoursite.com/2019/03/29/TuckerComplete/tucker_iter.png">
 
 
@@ -312,9 +312,7 @@
       
 
       
-        <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-<h1 id="Tucker-Decomposition"><a href="#Tucker-Decomposition" class="headerlink" title="Tucker Decomposition"></a>Tucker Decomposition</h1><p>在做矩阵补全的时候, 一个常用的算法是基于 matrix factorization. 即假设我们的真实矩阵服从某个 low-rank 分解结构. 这个思想很自然地可以推广到 tensor 上. 对于 tensor, 我们常用的分解有 CP decomposition [1], Tucker decomposition [1], 以及 tensor-train decomposition [2] 等.</p>
+        <h1 id="Tucker-Decomposition"><a href="#Tucker-Decomposition" class="headerlink" title="Tucker Decomposition"></a>Tucker Decomposition</h1><p>在做矩阵补全的时候, 一个常用的算法是基于 matrix factorization. 即假设我们的真实矩阵服从某个 low-rank 分解结构. 这个思想很自然地可以推广到 tensor 上. 对于 tensor, 我们常用的分解有 CP decomposition [1], Tucker decomposition [1], 以及 tensor-train decomposition [2] 等.</p>
 <p>假设有一个三阶张量 $\mathcal{X}\in \mathbb{R}^{I\times J\times K},$ 其 Tucker 分解形式为</p>
 <script type="math/tex; mode=display">\mathcal{X} = \sum_{p=1}^{P}\sum_{q=1}^{Q}\sum_{r=1}^{R} g_{pqr} a_p \circ b_q \circ c_r \tag{1.1},</script><p>其中 $a_p \in \mathbb{R}^I, b_q \in \mathbb{R}^J, c_r \in \mathbb{R}^K,$ $a_p \circ b_q \circ c_r$ 为向量的 <a href="https://en.wikipedia.org/wiki/Outer_product" target="_blank" rel="noopener">outer product</a>, $P, Q, R$ 为 Tucker ranks. 将 $a_p, b_q, c_r$ 作为列向量叠成矩阵 $A\in\mathbb{R}^{I\times P},B\in\mathbb{R}^{J\times Q},C\in\mathbb{R}^{K\times R}$ 后, 可以写为如下 Tucker format</p>
 <script type="math/tex; mode=display">\mathcal{X} = \mathcal{G} \times_1 A \times_2 B \times_3 C \tag{1.2},</script><p>其中 $\times_n$ 为张量对矩阵的 mode-n product [1]. 推广到 N 阶张量</p>
@@ -332,7 +330,7 @@
     \end{aligned}
     \right.
 \tag{2.2}</script><p>此时损失函数 (2.1) 可写为</p>
-<script type="math/tex; mode=display">L(G, A^{(1)}, \dots, A^{(N)}) = ||\mathcal{W} \ast (\mathcal{Y}(i_1, \dots, i_N) - [\![G; A^{(1)}, \dots, A^{(N)}]\!])||^2_F \tag{2.3},</script><p>其中 $A \ast B$ 表示 <a href="https://en.wikipedia.org/wiki/Hadamard_product_(matrices" target="_blank" rel="noopener">Hadamard product</a>), $||\cdot||_F^2$ 表示 <a href="https://en.wikipedia.org/wiki/Matrix_norm" target="_blank" rel="noopener">Frobenius norm</a>. 直接对 (2.3) 求导得 [3] </p>
+<script type="math/tex; mode=display">L(G, A^{(1)}, \dots, A^{(N)}) = ||\mathcal{W} \ast (\mathcal{Y}(i_1, \dots, i_N) - [\![G; A^{(1)}, \dots, A^{(N)}]\!])||^2_F \tag{2.3},</script><p>其中 $A \ast B$ 表示 <a href="https://en.wikipedia.org/wiki/Hadamard_product_matrices" target="_blank" rel="noopener">Hadamard product</a>, $||\cdot||_F^2$ 表示 <a href="https://en.wikipedia.org/wiki/Matrix_norm" target="_blank" rel="noopener">Frobenius norm</a>. 直接对 (2.3) 求导得 [3] </p>
 <script type="math/tex; mode=display">
 \begin{equation}\begin{split}
  \bigtriangledown_{A^{(n)}}L(G, A(1), \dots, A^{(N)} = 2 \left\{[\mathcal{W}\ast(\mathcal{G}\times_1 A^{(1)}\dots\times_N A^{(N)} - \mathcal{Y}]_{(n)} \cdot \\
