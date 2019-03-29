@@ -315,7 +315,9 @@
           
           
 
-Tucker Decomposition在做矩阵补全的时候, 一个常用的算法是基于 matrix factorization. 即假设我们的真实矩阵服从某个 low-rank 分解结构. 这个思想很自然地可以推广到 tensor 上. 对于 tensor, 我们常用的分解有 CP decompo
+Tucker Decomposition在做矩阵补全的时候, 一个常用的算法是基于 matrix factorization. 即假设我们的真实矩阵服从某个 low-rank 分解结构. 这个思想很自然地可以推广到 tensor 上. 对于 tensor, 我们常用的分解有 CP decomposition [1], Tucker decomposition [1], 以及 tensor-train decomposition [2] 等.
+假设有一个三阶张量 $\mathcal{X}\in \mathbb{R}^{I\times J\times K},$ 其 Tucker 分解形式为
+\
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -444,7 +446,10 @@ Tucker Decomposition在做矩阵补全的时候, 一个常用的算法是基于 
           最近在做很多矩阵的计算, 用到了 commutation matrix. 
 定义如下:
 
-设 $A \in \mathbb{R}^{m \times n},$ 则对应 commutation matrix $K^{(m, n)}$ 满足: K^{(m, n)} \mathrm{vec}(A) = \
+设 $A \in \mathbb{R}^{m \times n},$ 则对应 commutation matrix $K^{(m, n)}$ 满足: K^{(m, n)} \mathrm{vec}(A) = \mathrm{vec}(A^T).
+
+它的计算实际上也非常简单, Wikipedia 上给出了公式:
+K^{(m, n)} = \sum_{i=1}^{m}\sum_{j=1}^{n} (e_{m, i} e_{n, j}^T)\otimes (e_{n, j} e_{m, i}^T),其中 $e_
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -562,6 +567,12 @@ Tucker Decomposition在做矩阵补全的时候, 一个常用的算法是基于 
                     <a href="https://github.com/taozerui" target="_blank" title="Github">
                       
                         <i class="fa fa-fw fa-globe"></i>Github</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:zetui.tao@foxmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-globe"></i>E-Mail</a>
                   </span>
                 
             </div>
