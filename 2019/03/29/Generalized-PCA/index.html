@@ -82,14 +82,14 @@
 <meta name="description" content="PCA ReviewPrincipal component analysis (PCA) 一般来说可以从 maximum variance 以及降维两方面来理解. 从 maximum variance 的角度来讲, 假设有 $p$ 维随机变量 $X,$ 我们想要找到一组线性组合 $\beta^T_1 X, \beta^T_2 X, \dots, \beta^T_r X,$ 系数 $||\beta|">
 <meta name="keywords" content="PCA; Exponential Family.">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Generalized Principle Component Analysis">
+<meta property="og:title" content="Generalized Principle Component Analysis (1)">
 <meta property="og:url" content="http://yoursite.com/2019/03/29/Generalized-PCA/index.html">
 <meta property="og:site_name" content="Zerui&#39;s blog">
 <meta property="og:description" content="PCA ReviewPrincipal component analysis (PCA) 一般来说可以从 maximum variance 以及降维两方面来理解. 从 maximum variance 的角度来讲, 假设有 $p$ 维随机变量 $X,$ 我们想要找到一组线性组合 $\beta^T_1 X, \beta^T_2 X, \dots, \beta^T_r X,$ 系数 $||\beta|">
 <meta property="og:locale" content="ch/en">
-<meta property="og:updated_time" content="2019-04-01T12:25:27.867Z">
+<meta property="og:updated_time" content="2019-04-03T02:57:25.097Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Generalized Principle Component Analysis">
+<meta name="twitter:title" content="Generalized Principle Component Analysis (1)">
 <meta name="twitter:description" content="PCA ReviewPrincipal component analysis (PCA) 一般来说可以从 maximum variance 以及降维两方面来理解. 从 maximum variance 的角度来讲, 假设有 $p$ 维随机变量 $X,$ 我们想要找到一组线性组合 $\beta^T_1 X, \beta^T_2 X, \dots, \beta^T_r X,$ 系数 $||\beta|">
 
 
@@ -126,7 +126,7 @@
 
 
 
-  <title>Generalized Principle Component Analysis | Zerui's blog</title>
+  <title>Generalized Principle Component Analysis (1) | Zerui's blog</title>
   
 
 
@@ -260,7 +260,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Generalized Principle Component Analysis</h1>
+          <h1 class="post-title" itemprop="name headline">Generalized Principle Component Analysis (1)</h1>
         
 
         <div class="post-meta">
@@ -346,14 +346,14 @@ B_F(x||g(\theta)) &= B_F(x||\mu),\\
 <p>式 (2.5) 中前两项与 $\theta$ 无关, 于是在优化时考虑 Bregman divergence 即可. 将损失函数 (2.3) 重写为</p>
 <script type="math/tex; mode=display">L(V, A) = \sum_i\sum_j B_F(x_{ij} || g(\theta_{ij})). \tag{2.8}</script><p>在优化 (2.8) 时, 文献 [2] 中采用的是类似与 alternating least square (ALS) 的算法, 即分别优化 $A, V$. 可总结为一下两步:</p>
 <ul>
-<li>$ A^{(t)} = \argmin_{A} L(V^{(t-1)}, A).$</li>
-<li>$ V^{(t)} = \argmin_{V} L(V, A^{(t)}).$</li>
+<li>$ A^{(t)} = \underset{A}{\mathrm{argmin}} \{L(V^{(t-1)}, A)\}.$</li>
+<li>$ V^{(t)} = \underset{V}{\mathrm{argmin}} \{L(V, A^{(t)})\}.$</li>
 </ul>
-<h1 id="Extensions"><a href="#Extensions" class="headerlink" title="Extensions"></a>Extensions</h1><p>上述的 generalized PCA 算法存在几个问题, 首先, 在每一步优化步骤中, 分别优化 $A, V$ 可以看做两个子问题. 当分布为 Gauss 时这个解是很好求的, 特别的, 当 principal component 为 1 个时, 算法退化到求 SVD 的 <a href="https://en.wikipedia.org/wiki/Power_iteration" target="_blank" rel="noopener">power method</a>. 但是在其它分布情况下, 每个子问题只有用梯度下降等方法来求解, 效率比较低. 此外, 该方法可以总结为给出了 natural parameter 的分解形式 $\hat{\Theta} = AV^T.$ 当进来一组新样本 $x^<em>$ 时, 若我们知道对应的 natural parameter $\theta^</em>,$ 那么可以直接得到它的投影 $\hat{\theta}^<em> = V\theta^</em>,$ 从而得到 $\hat{x}^<em>.$ 但是实际上 natural parameter $\theta^</em>$ 是未知的, 所以实际计算时应该求解一个新的优化问题 (2.8). 针对这两个问题, 后续的研究主要集中在 Bernoulli 分布的情况下.</p>
+<h1 id="Simulation"><a href="#Simulation" class="headerlink" title="Simulation"></a>Simulation</h1><h1 id="Discussion"><a href="#Discussion" class="headerlink" title="Discussion"></a>Discussion</h1><p>上述的 generalized PCA 算法存在几个问题, 首先, 在每一步优化步骤中, 分别优化 $A, V$ 可以看做两个子问题. 当分布为 Gauss 时这个解是很好求的, 特别的, 当 principal component 为 1 个时, 算法退化到求 SVD 的 <a href="https://en.wikipedia.org/wiki/Power_iteration" target="_blank" rel="noopener">power method</a>. 但是在其它分布情况下, 每个子问题只有用梯度下降等方法来求解, 效率比较低. 此外, 该方法可以总结为给出了 natural parameter 的分解形式 $\hat{\Theta} = AV^T.$ 当进来一组新样本 $x^{*}$ 时, 若我们知道对应的 natural parameter $\theta^{*},$ 那么可以直接得到它的投影 $\hat{\theta}^{*} = V\theta^{*},$ 从而得到 $\hat{x}^{*}.$ 但是实际上 natural parameter $\theta^{*}$ 是未知的, 所以实际计算时应该求解一个新的优化问题 (2.8). 针对这两个问题, 后续的研究主要集中在 Bernoulli 分布的情况下.</p>
 <p>针对第一个问题, 文献 [3] 中提出了基于 log-likelihood 的 lower bound 的解法. 即在每一步优化这个 lower bound, 并且其极小值可由解方程得到. 这样在每一步迭代时, 只需求解一个方程组.</p>
 <p>针对第二个问题, 在文献 [4] 中, 作者提出了一种新的解法. 在 Bernoulli 分布中, 假设 $x_{ij} \in \{0, 1\}$ 为 $(0, 1)$ 编码, 记 $q_{ij} \in \{-1, 1\}$ 为对应的 $(-1, 1)$ 编码. 当 $x_{ij} = 0, 1$ 时, 对应的 natural parameter 为 $-\infty, +\infty.$ 于是, $\theta_{ij} = \lim_{m\to+\infty}q_{ij}.$ 写为矩阵形式, 记为</p>
 <script type="math/tex; mode=display">\tilde{\Theta} = mQ, \tag{3.1}</script><p>其中 $Q = 2 X - \boldsymbol{1}_{N\times p},$ $m$ 为一较大的正数. <code>(emm, 这个设定感觉怪怪的, 不知道出处在哪里...)</code> 然后类似于 (1.4) 的形式, 投影后的 natural parameter 可写为 (假设已经中心化)</p>
-<script type="math/tex; mode=display">\Theta = \tilde{\Theta}V V^T. \tag{3.2}</script><p>这样在新样本进来时, 直接能知道 $\tilde{\theta}^<em>$, 从而计算 $\hat{\theta}^</em>.$</p>
+<script type="math/tex; mode=display">\Theta = \tilde{\Theta}V V^T. \tag{3.2}</script><p>这样在新样本进来时, 直接能知道 $\tilde{\theta}^{*}$, 从而计算 $\hat{\theta}^{*}.$</p>
 <h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><p>[1] Johnson R A, Wichern D W. Applied multivariate statistical analysis[M]. Upper Saddle River, NJ: Prentice hall, 2002.</p>
 <p>[2] Collins M, Dasgupta S, Schapire R E. A generalization of principal components analysis to the exponential family[C]//Advances in neural information processing systems. 2002: 617-624.</p>
 <p>[3] Schein A I, Saul L K, Ungar L H. A generalized linear model for principal component analysis of binary data[C]//Aistats. 2003, 3(9): 10.</p>
@@ -535,7 +535,7 @@ B_F(x||g(\theta)) &= B_F(x||\mu),\\
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#PCA-Review"><span class="nav-number">1.</span> <span class="nav-text">PCA Review</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Generalized-PCA"><span class="nav-number">2.</span> <span class="nav-text">Generalized PCA</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Extensions"><span class="nav-number">3.</span> <span class="nav-text">Extensions</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#References"><span class="nav-number">4.</span> <span class="nav-text">References</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#PCA-Review"><span class="nav-number">1.</span> <span class="nav-text">PCA Review</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Generalized-PCA"><span class="nav-number">2.</span> <span class="nav-text">Generalized PCA</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Simulation"><span class="nav-number">3.</span> <span class="nav-text">Simulation</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Discussion"><span class="nav-number">4.</span> <span class="nav-text">Discussion</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#References"><span class="nav-number">5.</span> <span class="nav-text">References</span></a></li></ol></div>
             
 
           </div>
