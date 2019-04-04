@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Zerui&#39;s blog">
 <meta property="og:description" content="PCA ReviewPrincipal component analysis (PCA) 一般来说可以从 maximum variance 以及降维两方面来理解. 从 maximum variance 的角度来讲, 假设有 $p$ 维随机变量 $X,$ 我们想要找到一组线性组合 $\beta^T_1 X, \beta^T_2 X, \dots, \beta^T_r X,$ 系数 $||\beta|">
 <meta property="og:locale" content="ch/en">
-<meta property="og:updated_time" content="2019-04-04T02:02:36.532Z">
+<meta property="og:updated_time" content="2019-04-04T13:21:03.551Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Generalized Principle Component Analysis (1)">
 <meta name="twitter:description" content="PCA ReviewPrincipal component analysis (PCA) 一般来说可以从 maximum variance 以及降维两方面来理解. 从 maximum variance 的角度来讲, 假设有 $p$ 维随机变量 $X,$ 我们想要找到一组线性组合 $\beta^T_1 X, \beta^T_2 X, \dots, \beta^T_r X,$ 系数 $||\beta|">
@@ -368,14 +368,16 @@ L(V, A) &= \sum_{i, j} \{x_{ij} \log p(x_{ij};\theta_{ij}) + (1 - x_{ij}) \log (
 \end{split}\end{equation} \tag{3.3}</script><p>然后利用梯度下降求解即可.</p>
 <p>但实际做的时候每一步 ALS (2.9) 与 (2.10) 都要做迭代, 计算量很大, 收敛结果也不好.</p>
 <h1 id="Discussion"><a href="#Discussion" class="headerlink" title="Discussion"></a>Discussion</h1><p>上述的 generalized PCA 算法存在几个问题, 首先, 在每一步优化步骤中, 分别优化 $A, V$ 可以看做两个子问题. 当分布为 Gauss 时这个解是很好求的, 特别的, 当 principal component 为 1 个时, 算法退化到求 SVD 的 <a href="https://en.wikipedia.org/wiki/Power_iteration" target="_blank" rel="noopener">power method</a>. 但是在其它分布情况下, 每个子问题只有用梯度下降等方法来求解, 效率比较低. 此外, 该方法可以总结为给出了 natural parameter 的分解形式 $\hat{\Theta} = AV^T.$ 当进来一组新样本 $x^{*}$ 时, 若我们知道对应的 natural parameter $\theta^{*},$ 那么可以直接得到它的投影 $\hat{\theta}^{*} = V\theta^{*},$ 从而得到 $\hat{x}^{*}.$ 但是实际上 natural parameter $\theta^{*}$ 是未知的, 所以实际计算时应该求解一个新的优化问题 (2.8). 针对这两个问题, 后续的研究主要集中在 Bernoulli 分布的情况下.</p>
-<p>针对第一个问题, 文献 [3] 中提出了基于 log-likelihood 的 lower bound 的解法. 即在每一步优化这个 lower bound, 并且其极小值可由解方程得到. 这样在每一步迭代时, 只需求解一个方程组.</p>
-<p>针对第二个问题, 在文献 [4] 中, 作者提出了一种新的解法, 并且指出此处的 generalizled PCA 算法更像是在做 SVD 或 matrix factorization.</p>
-<p>此外, 针对 tensor 情形的讨论, 参考 [5].</p>
+<p>针对第一个问题, 一个想法是在每一步迭代的时候构造一个 log-likelihood 的凸的 lower bound, 并且在优化这个 lower bound 的时候有 closed form 解. 不过这种解法好像多用于 Bernoulli 分布, 参考 [3] [4].</p>
+<p>针对第二个问题, 在文献 [5] 中, 作者提出了一种新的解法, 并且指出此处的 generalizled PCA 算法更像是在做 SVD 或 matrix factorization.</p>
+<p>此外, 针对 tensor 情形的讨论, 参考 [6] [7].</p>
 <h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><p>[1] Johnson R A, Wichern D W. Applied multivariate statistical analysis[M]. Upper Saddle River, NJ: Prentice hall, 2002.</p>
 <p>[2] Collins M, Dasgupta S, Schapire R E. A generalization of principal components analysis to the exponential family[C]//Advances in neural information processing systems. 2002: 617-624.</p>
 <p>[3] Schein A I, Saul L K, Ungar L H. A generalized linear model for principal component analysis of binary data[C]//Aistats. 2003, 3(9): 10.</p>
-<p>[4] Landgraf A J, Lee Y. Dimensionality reduction for binary data through the projection of natural parameters[J]. arXiv preprint arXiv:1510.06112, 2015.</p>
-<p>[5] Wang M, Li L. Learning from binary multiway data: probabilistic tensor decomposition and its statistical optimality[J]. arXiv preprint arXiv:1811.05076, 2018.</p>
+<p>[4] Lee S, Huang J Z, Hu J. Sparse logistic principal components analysis for binary data[J]. The annals of applied statistics, 2010, 4(3): 1579.</p>
+<p>[5] Landgraf A J, Lee Y. Dimensionality reduction for binary data through the projection of natural parameters[J]. arXiv preprint arXiv:1510.06112, 2015.</p>
+<p>[6] Wang M, Li L. Learning from binary multiway data: probabilistic tensor decomposition and its statistical optimality[J]. arXiv preprint arXiv:1811.05076, 2018.</p>
+<p>[7] Hayashi K, Takenouchi T, Shibata T, et al. Exponential family tensor factorization for missing-values prediction and anomaly detection[C]//2010 IEEE International Conference on Data Mining. IEEE, 2010: 216-225.</p>
 
       
     </div>
