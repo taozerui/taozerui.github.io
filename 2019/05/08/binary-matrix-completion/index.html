@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Tensor decomposition,Tensor completion,">
+  <meta name="keywords" content="Matrix completion,">
 
 
 
@@ -79,20 +79,20 @@
 
 
 
-<meta name="description" content="Tucker Decomposition在做矩阵补全的时候, 一个常用的算法是基于 matrix factorization. 即假设我们的真实矩阵服从某个 low-rank 分解结构. 这个思想很自然地可以推广到 tensor 上. 对于 tensor, 我们常用的分解有 CP decomposition [1], Tucker decomposition [1], 以及 tensor-trai">
-<meta name="keywords" content="Tensor decomposition,Tensor completion">
+<meta name="description" content="IntroductionFor matrix completion problem, one basic assumption is that the underlying true matrix is low rank. Suppose the true matrix of interest is $A\in\mathbb{R}^{n_2\times n_2},$ and we partiall">
+<meta name="keywords" content="Matrix completion">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Tensor Completion by Tucker Decomposition">
-<meta property="og:url" content="http://yoursite.com/2019/03/29/TuckerComplete/index.html">
+<meta property="og:title" content="Binary Matrix Completion">
+<meta property="og:url" content="http://yoursite.com/2019/05/08/binary-matrix-completion/index.html">
 <meta property="og:site_name" content="Zerui&#39;s blog">
-<meta property="og:description" content="Tucker Decomposition在做矩阵补全的时候, 一个常用的算法是基于 matrix factorization. 即假设我们的真实矩阵服从某个 low-rank 分解结构. 这个思想很自然地可以推广到 tensor 上. 对于 tensor, 我们常用的分解有 CP decomposition [1], Tucker decomposition [1], 以及 tensor-trai">
+<meta property="og:description" content="IntroductionFor matrix completion problem, one basic assumption is that the underlying true matrix is low rank. Suppose the true matrix of interest is $A\in\mathbb{R}^{n_2\times n_2},$ and we partiall">
 <meta property="og:locale" content="ch/en">
-<meta property="og:image" content="http://yoursite.com/2019/03/29/TuckerComplete/tucker_iter.png">
-<meta property="og:updated_time" content="2019-04-12T03:04:14.165Z">
+<meta property="og:image" content="http://yoursite.com/2019/05/08/binary-matrix-completion/iteration.png">
+<meta property="og:updated_time" content="2019-05-08T13:18:28.740Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Tensor Completion by Tucker Decomposition">
-<meta name="twitter:description" content="Tucker Decomposition在做矩阵补全的时候, 一个常用的算法是基于 matrix factorization. 即假设我们的真实矩阵服从某个 low-rank 分解结构. 这个思想很自然地可以推广到 tensor 上. 对于 tensor, 我们常用的分解有 CP decomposition [1], Tucker decomposition [1], 以及 tensor-trai">
-<meta name="twitter:image" content="http://yoursite.com/2019/03/29/TuckerComplete/tucker_iter.png">
+<meta name="twitter:title" content="Binary Matrix Completion">
+<meta name="twitter:description" content="IntroductionFor matrix completion problem, one basic assumption is that the underlying true matrix is low rank. Suppose the true matrix of interest is $A\in\mathbb{R}^{n_2\times n_2},$ and we partiall">
+<meta name="twitter:image" content="http://yoursite.com/2019/05/08/binary-matrix-completion/iteration.png">
 
 
 
@@ -122,13 +122,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/03/29/TuckerComplete/">
+  <link rel="canonical" href="http://yoursite.com/2019/05/08/binary-matrix-completion/">
 
 
 
 
 
-  <title>Tensor Completion by Tucker Decomposition | Zerui's blog</title>
+  <title>Binary Matrix Completion | Zerui's blog</title>
   
 
 
@@ -255,7 +255,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/29/TuckerComplete/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/08/binary-matrix-completion/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Zerui Tao">
@@ -272,7 +272,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Tensor Completion by Tucker Decomposition</h1>
+          <h1 class="post-title" itemprop="name headline">Binary Matrix Completion</h1>
         
 
         <div class="post-meta">
@@ -284,8 +284,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-29T11:29:17+08:00">
-                2019-03-29
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-05-08T21:00:41+08:00">
+                2019-05-08
               </time>
             
 
@@ -322,50 +322,62 @@
       
 
       
-        <h1 id="Tucker-Decomposition"><a href="#Tucker-Decomposition" class="headerlink" title="Tucker Decomposition"></a>Tucker Decomposition</h1><p>在做矩阵补全的时候, 一个常用的算法是基于 matrix factorization. 即假设我们的真实矩阵服从某个 low-rank 分解结构. 这个思想很自然地可以推广到 tensor 上. 对于 tensor, 我们常用的分解有 CP decomposition [1], Tucker decomposition [1], 以及 tensor-train decomposition [2] 等.</p>
-<p>假设有一个三阶张量 $\mathcal{X}\in \mathbb{R}^{I\times J\times K},$ 其 Tucker 分解形式为</p>
-<script type="math/tex; mode=display">\mathcal{X} = \sum_{p=1}^{P}\sum_{q=1}^{Q}\sum_{r=1}^{R} g_{pqr} a_p \circ b_q \circ c_r \tag{1.1},</script><p>其中 $a_p \in \mathbb{R}^I, b_q \in \mathbb{R}^J, c_r \in \mathbb{R}^K,$ $a_p \circ b_q \circ c_r$ 为向量的 <a href="https://en.wikipedia.org/wiki/Outer_product" target="_blank" rel="noopener">outer product</a>, $P, Q, R$ 为 Tucker ranks. 将 $a_p, b_q, c_r$ 作为列向量叠成矩阵 $A\in\mathbb{R}^{I\times P},B\in\mathbb{R}^{J\times Q},C\in\mathbb{R}^{K\times R}$ 后, 可以写为如下 Tucker format</p>
-<script type="math/tex; mode=display">\mathcal{X} = \mathcal{G} \times_1 A \times_2 B \times_3 C \tag{1.2},</script><p>其中 $\times_n$ 为张量对矩阵的 mode-n product [1]. 推广到 N 阶张量</p>
-<script type="math/tex; mode=display">\mathcal{X} = \mathcal{G} \times_1 A^{(1)} \cdots \times_N A^{(N)} = [\![G; A^{(1)}, \dots, A^{(N)}]\!] \tag{1.3}.</script><p>可以看到原张量中的元素个数为 $\mathcal{O}(d^N)$, 而写为 Tucker 形式后, 元素个数降为 $\mathcal{O}(r^N + dNr),$ 当 Tucker rank $r$ 取得很小时可以显著减少所需的元素数量. 在实际应用中, 往往选择较小的 Tucker rank, 求得原张量 $\mathcal{X}$ 的一个 low-rank 近似.</p>
-<p>在求解 Tucker decomposition 时, 比较常用的有 HOSVD [1], HOOI [1]. 此外, 也可以用梯度下降等方法.</p>
-<h1 id="Tensor-Completion"><a href="#Tensor-Completion" class="headerlink" title="Tensor Completion"></a>Tensor Completion</h1><p>现在假设有一个 N-way 张量 $\mathcal{X} \in \mathbb{R}^{I_1\times \cdots \times I_N},$ 观测到的张量记为 $\mathcal{Y},$ 且只观测到一部分元素, 记观测到的下标集合为 $\mathcal{S}.$ 且每个元素满足</p>
-<script type="math/tex; mode=display">\mathcal{Y}(i_1, \dots, i_N) = \mathcal{X}(i_1, \dots, i_N) + \mathcal{E}(i_1, \dots, i_N),</script><p>其中 $(i_1, \dots, i_N) \in \mathcal{S},$ 噪声 $\mathcal{E}(i_1, \dots, i_N) \sim \mathcal{N}(0, \sigma^2).$</p>
-<p>假设真实的张量 $\mathcal{X}$ 为 low-rank, 且满足 Tucker format, 在噪声满足 Gauss 分布假设下, 损失函数可以写为</p>
+        <h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p>For matrix completion problem, one basic assumption is that the underlying true matrix is low rank. Suppose the true matrix of interest is $A\in\mathbb{R}^{n_2\times n_2},$ and we partially observe $Y\in\mathbb{R}^{n_1\times n_2},$ where</p>
+<script type="math/tex; mode=display">Y_{ij} = A_{ij} + \epsilon_{ij}. \tag{1.1}</script><p>Moreover, we assume i.i.d. Gaussian noise $\epsilon_{ij}$ and denote the observed indexes $(i, j)\in\Omega.$ Most of papers consider <em>missing at random</em> (MAR) mechanism, for which we can use reduced loss function as follows</p>
 <script type="math/tex; mode=display">
 \begin{equation}\begin{split}
-&L(G, A^{(1)}, \dots, A^{(N)}) = \\
-&\sum_{(i_1, \dots, i_N) \in \mathcal{S}}(\mathcal{Y}(i_1, \dots, i_N) - [\![G; A^{(1)}, \dots, A^{(N)}]\!](i_1, \dots, i_N))^2.\\
-\end{split}\end{equation}\tag{2.1}</script><p>然后可以用梯度下降进行求解. 在做分解的过程中, 优化问题往往是非凸的, 分解结果也不唯一. 通常会采用 Alternating Least Square (ALS) 算法, 即在每一步中针对一个 factor $A^{(i)}$ 作优化, 固定其它的 factor, 此时每一个子问题是凸的. 由于我们只观测到了一部分下标, 在对 (2.1) 式求导时只能对每一个观测到的下标分别求导, 这样显然是效率比较的低的.</p>
-<p>为了让损失函数直接对矩阵求导, 定义 mask tensor $\mathcal{W} \in \mathbb{R}^{I_i\times, \dots, I_N},$ 其元素满足</p>
-<script type="math/tex; mode=display">\mathcal{W}(i_1, \dots, i_N) = \left\{
-    \begin{aligned}
-    1, \quad &(i_1, \dots, i_N) \in \mathcal{S}\\
-    0, \quad &else\\
-    \end{aligned}
-    \right.
-\tag{2.2}</script><p>此时损失函数 (2.1) 可写为</p>
-<script type="math/tex; mode=display">L(G, A^{(1)}, \dots, A^{(N)}) = ||\mathcal{W} \ast (\mathcal{Y}(i_1, \dots, i_N) - [\![G; A^{(1)}, \dots, A^{(N)}]\!])||^2_F \tag{2.3},</script><p>其中 $A \ast B$ 表示 <a href="https://en.wikipedia.org/wiki/Hadamard_product_matrices" target="_blank" rel="noopener">Hadamard product</a>, $||\cdot||_F^2$ 表示 <a href="https://en.wikipedia.org/wiki/Matrix_norm" target="_blank" rel="noopener">Frobenius norm</a>. 直接对 (2.3) 求导得 [3] </p>
-<script type="math/tex; mode=display">
-\begin{equation}\begin{split}
- \bigtriangledown_{A^{(n)}}L(G, A(1), \dots, A^{(N)} = 2 \left\{[\mathcal{W}\ast(\mathcal{G}\times_1 A^{(1)}\dots\times_N A^{(N)} - \mathcal{Y}]_{(n)} \cdot \\
- [(\mathcal{G} \times_1 A^{(1)}\cdots \times_{n-1} A^{(n-1)} \times_{n+1} A^{(n+1)} \cdots \times_N A^{(N)})_{(n)}]^T
- \right\},
-\end{split}\end{equation} \tag{2.4}</script><p>以及</p>
-<script type="math/tex; mode=display">
-\begin{equation}\begin{split}
- \bigtriangledown_{\mathcal{G}}L(G, A(1), \dots, A^{(N)} = &2[\mathcal{W}\ast(\mathcal{G}\times_1 A^{(1)}\dots\times_N A^{(N)} - \mathcal{Y})]\\
- &\times_1 A^{(1)}\cdots \times_N A^{(N)},
-\end{split}\end{equation} \tag{2.5}</script><p>其中下标 $(\cdot)_{(n)}$ 表示 mode-n matricization [1]. 利用 (2.4) 与 (2.5), 可以利用梯度下降来求解问题 (2.3).</p>
-<p>我们在 <a href="https://archive.ics.uci.edu/ml/datasets/Restaurant+%26+consumer+data" target="_blank" rel="noopener">The Restaurant &amp; Consumer Dataset</a> 上进行实验, 代码见<a href="https://github.com/taozerui/tensorCom/blob/master/generalized_tucker/code/completion.py" target="_blank" rel="noopener">这里</a>. 该数据集包含了 138 位用户对 130 个餐馆的评分, 评分内容包括 rating, food rating, service rating 三个方面, 总共有 1161 条评分记录. 将评分 binary 后, 分割 0.85 条评分作为训练, 剩下的测试. 取 Tucker rank 为 $(4, 4, 2)$, learning rate 为 $0.0001,$ 算法收敛过程如图.</p>
-<img src="/2019/03/29/TuckerComplete/tucker_iter.png" title="迭代过程">
-<p>测试集上的误差在 <code>0.15</code> 左右.</p>
-<h1 id="Discussion"><a href="#Discussion" class="headerlink" title="Discussion"></a>Discussion</h1><p>既然 ALS 也是梯度下降过程, 自然可以考虑利用 Nesterov algorithm 进行加速. 不过由于 Tucker decomposition 问题是非凸的, 所以直接用效果可能不好. [4] 中提出了一个解决方案.</p>
-<p>另外上述分解是在 Gaussian 假设下做的, 采用平方损失. 实际上在 recommender system 中, 更符合实际的假设是 Poisson, 以及 Bernoulli 分布. 关于 exponential family 下的分解参考 [5].</p>
-<h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><p>[1] Kolda T G, Bader B W. Tensor decompositions and applications[J]. SIAM review, 2009, 51(3): 455-500.</p>
-<p>[2] Oseledets I V. Tensor-train decomposition[J]. SIAM Journal on Scientific Computing, 2011, 33(5): 2295-2317.</p>
-<p>[3] Filipovic M, Jukic A. Tucker factorization with missing data with application to low-nrank tensor completion. Multidim. Syst[J]. Sign. P, 2013.</p>
-<p>[4] Mitchell D, Ye N, De Sterck H. Nesterov Acceleration of Alternating Least Squares for Canonical Tensor Decomposition[J]. arXiv preprint arXiv:1810.05846, 2018.</p>
-<p>[5] Wang M, Li L. Learning from Binary Multiway Data: Probabilistic Tensor Decomposition and its Statistical Optimality[J]. arXiv preprint arXiv:1811.05076, 2018.</p>
+\text{minimize} \quad &\sum_{(i, j) \in \Omega} (A_{ij} - Y_{ij})^2,\\
+\text{subject to} \quad &\mathrm{rank}(A) \leq R.
+\end{split}\end{equation} \tag{1.2}</script><p>However, optimizing the matrix rank is NP hard. Basically, there are two popupar solutions for problem (1.2). One is matrix factorization, which decomposes the matrix into two parts, as $A = UV^T,$ and can be extended to tensors, as in <a href="http://blog.taozerui.xyz/2019/03/29/TuckerComplete/#more" target="_blank" rel="noopener">my older post</a>. Another is to find a convex relaxation of matrix rank, which lead to the <a href="https://en.wikipedia.org/wiki/Matrix_norm" target="_blank" rel="noopener">matrix nuclear norm</a>.</p>
+<p>For the matrix nuclear norm solution, we may track to the paper by Candes and Recht (2009) [1]. They proposed a model under kind of rigid assumption, that the loss in (1.2) is exactly zero. Also, they established theoretical garantees for the problem. Then, in [2], Cat el al. considered the noise scenario and the famous <em>singular value thresholding</em> (SVT) operator. On the other hand, Rohde et al. established the so called <em>trace regression</em> model [3], and gave the upper and lower bound of the proposed estimator. Futhermore, some extensions can be found in [4] and [5], which gave analysis under arbitrary sampling mechanisms.</p>
+<p>However, in many real applications, such as recommendy systems, the data do not follow the Gaussian assumption (1.1). There have been many papers cosider exponential family scenario. One of the most important class is the 1-bit matrix completion. Early work can be found in [6]. Davenport et al. described the 1-bit matrix completion scheme and gave the optimal rate of the proposed estimator.</p>
+<h1 id="Model"><a href="#Model" class="headerlink" title="Model"></a>Model</h1><p>Here we consider a simple case. Suppose $Y$ has binary elements, who follows Bernoulli distribution</p>
+<script type="math/tex; mode=display">Y_{ij} \sim Bern(P_{ij}). \tag{2.1}</script><p>Following the language of <em>generalized linear model</em>, we adopted <em>logit</em> link function, hence</p>
+<script type="math/tex; mode=display">P_{ij} = \frac{\exp(\Theta_{ij})}{1 + \exp(\Theta_{ij})},</script><p>where $\Theta\in\mathbb{R}^{n_1\times n_2}$ is the matrix of natural parameter. The inverse log-likelihood (or cross entropy loss) is</p>
+<script type="math/tex; mode=display">l(\Theta) = -2 \cdot \sum_{(i,j)\in\Omega}\{Y_{ij}\Theta_{ij} - \log(1 + \exp(\Theta_{ij}))\}. \tag{2.2}</script><p>Moreover, add nuclear norm penalty to the loss function (2.2), we get the estimator</p>
+<script type="math/tex; mode=display">\hat{\Theta} = \underset{\Theta}{\mathrm{argmin}} -2 \cdot \sum_{(i,j)\in\Omega}\{Y_{ij}\Theta_{ij} - \log(1 + \exp(\Theta_{ij}))\} + \lambda||\Theta||_* \tag{2.3},</script><p>where $||\Theta||_*$ denotes the nuclear norm.</p>
+<h1 id="Estimation"><a href="#Estimation" class="headerlink" title="Estimation"></a>Estimation</h1><p>The convex optimization problem can be easily estimated by <em>proximal algorithm</em>. We follows the algorithm in [7].</p>
+<p>In order to write the first order derivative for cross entropy loss (2.2), we rewrite it in matrix form,</p>
+<script type="math/tex; mode=display">l(\Theta) = -2 \cdot \{ \langle M \ast Y, \Theta \rangle - \langle M, \log(1 + \exp(\Theta))\rangle\}, \tag{3.1}</script><p>where $\ast$ represents the <a href="https://en.wikipedia.org/wiki/Hadamard_product_matrices" target="_blank" rel="noopener">Hadamard product</a> and $M$ is the mask matrix indexing whether the element is observed (1 for observed, 0 otherwise).<br>The first order derivative for (3.1) is</p>
+<script type="math/tex; mode=display">\triangledown l(\Theta) = -2 \cdot \{M\ast Y - M \ast \mathrm{sigmoid}(\Theta)\}.</script><p>The accelerated proximal algorithm is summarized as follows,</p>
+<blockquote>
+<p>Initialize $\Theta_0,$ $\Theta_1 = \Theta_0,$ $L &gt; 0$, $\alpha_1 = 1,$ $\alpha_0 = 0$ and $\beta \in (0, 1).$</p>
+<p>Iterate:</p>
+<blockquote>
+<ol>
+<li>$A_k = \Theta_k + \frac{\alpha_{k-1} - 1}{\alpha_k} (\Theta_{k} - \Theta_{k-1}).$</li>
+<li>Repeat<blockquote>
+<ul>
+<li><p>$S_{k} = A_{k} - L_0 \triangledown l(A_{k}).$</p>
+</li>
+<li><p>$\Theta_{temp} = \mathrm{SVT}_{\lambda L_0}(S_{k}).$</p>
+</li>
+<li><p>$L = \beta L.$</p>
+</li>
+</ul>
+<p>Until $l(\Theta_{temp}) &lt; Q(\Theta_{temp}, S_{k}).$</p>
+</blockquote>
+</li>
+<li>$\Theta_{k+1} = \Theta_{temp}.$</li>
+<li>$\alpha_{k+1} = \frac{1 + \sqrt{1 + 4\alpha_{k}^2}}{2}.$</li>
+</ol>
+</blockquote>
+</blockquote>
+<p>In step 2 of the iteration, $Q(\Theta, S_k) = l(S_k) + \langle \triangledown l(S_k), \Theta - S_k \rangle + \frac{1}{2 L} ||\Theta - S_k||^2_F,$ which is an  upper bound of the loss function, if the Lipschitz continuous condition holds. And $\mathrm{SVT}(\cdot)$ is the singular value theresholding operator.</p>
+<h1 id="Simulations"><a href="#Simulations" class="headerlink" title="Simulations"></a>Simulations</h1><p>We generate some synthetic data to test the model. We set $n_1 = 1000$ and $n_2 = 1200.$ Generate $U\in\mathbb{R}^{n_1\times r}$ and $V\in\mathbb{R}^{n_2\times r}$ from standard Gaussian distribution, where $r=5.$ Then set $\Theta = UV^T.$ Then compute the propability $P = \mathrm{sigmoid}(\Theta)$ and generate $Y_{ij}\sim Bern(\Theta).$ Finally, randomly generate mask matrix elements following $M_{ij} \sim Bern(0.2).$</p>
+<p>For the estimation algorithm, we use both proximal algorithm and the accelerated proximal algorithm descibed above. The iteration step is shown in following figure.</p>
+<img src="/2019/05/08/binary-matrix-completion/iteration.png">
+<p>It seems that the accelerated algorithm performs better that the proximal algorithm.</p>
+<p>Moreover, we use the soft-impute implementation in <code>fancyimpute</code> package of Python as benchmark, <a href="https://github.com/iskandr/fancyimpute" target="_blank" rel="noopener">see code</a>. The benchmark error and errors of our model is:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">The benchmark error by SoftImpute is 0.295.</span><br><span class="line">The mis-classification error is | &apos;proximal&apos; 0.333 | &apos;apgl&apos; 0.262.</span><br></pre></td></tr></table></figure></p>
+<p>The accelerated algorithm has lower test error than other candidates. However, the parameters in soft-impute algorithm are not modified.</p>
+<p>The code of this post can be found <a href="https://github.com/taozerui/tensor_completion/blob/master/tensorCom/matrix/apgl.py" target="_blank" rel="noopener">here</a>.</p>
+<h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><p>[1] Candès E J, Recht B. Exact matrix completion via convex optimization[J]. Foundations of Computational mathematics, 2009, 9(6): 717.</p>
+<p>[2] Cai J F, Candès E J, Shen Z. A singular value thresholding algorithm for matrix completion[J]. SIAM Journal on Optimization, 2010, 20(4): 1956-1982.</p>
+<p>[3] Rohde A, Tsybakov A B. Estimation of high-dimensional low-rank matrices[J]. The Annals of Statistics, 2011, 39(2): 887-930.</p>
+<p>[4] Koltchinskii V, Lounici K, Tsybakov A B. Nuclear-norm penalization and optimal rates for noisy low-rank matrix completion[J]. The Annals of Statistics, 2011, 39(5): 2302-2329.</p>
+<p>[5] Klopp O. Noisy low-rank matrix completion with general sampling distribution[J]. Bernoulli, 2014, 20(1): 282-303.</p>
+<p>[6] Davenport M A, Plan Y, Van Den Berg E, et al. 1-bit matrix completion[J]. Information and Inference: A Journal of the IMA, 2014, 3(3): 189-223.</p>
+<p>[7] Ji S, Ye J. An accelerated gradient method for trace norm minimization[C]. Proceedings of the 26th annual international conference on machine learning. ACM, 2009: 457-464.</p>
 
       
     </div>
@@ -383,9 +395,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Tensor-decomposition/" rel="tag"># Tensor decomposition</a>
-          
-            <a href="/tags/Tensor-completion/" rel="tag"># Tensor completion</a>
+            <a href="/tags/Matrix-completion/" rel="tag"># Matrix completion</a>
           
         </div>
       
@@ -398,8 +408,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/09/02/Fast-Commutation-Matrix-Computing/" rel="next" title="Fast Commutation Matrix Computing">
-                <i class="fa fa-chevron-left"></i> Fast Commutation Matrix Computing
+              <a href="/2019/03/29/Generalized-PCA/" rel="next" title="Generalized Principle Component Analysis (1)">
+                <i class="fa fa-chevron-left"></i> Generalized Principle Component Analysis (1)
               </a>
             
           </div>
@@ -407,10 +417,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/03/29/Generalized-PCA/" rel="prev" title="Generalized Principle Component Analysis (1)">
-                Generalized Principle Component Analysis (1) <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -549,7 +555,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Tucker-Decomposition"><span class="nav-number">1.</span> <span class="nav-text">Tucker Decomposition</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Tensor-Completion"><span class="nav-number">2.</span> <span class="nav-text">Tensor Completion</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Discussion"><span class="nav-number">3.</span> <span class="nav-text">Discussion</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#References"><span class="nav-number">4.</span> <span class="nav-text">References</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Introduction"><span class="nav-number">1.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Model"><span class="nav-number">2.</span> <span class="nav-text">Model</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Estimation"><span class="nav-number">3.</span> <span class="nav-text">Estimation</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Simulations"><span class="nav-number">4.</span> <span class="nav-text">Simulations</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#References"><span class="nav-number">5.</span> <span class="nav-text">References</span></a></li></ol></div>
             
 
           </div>
