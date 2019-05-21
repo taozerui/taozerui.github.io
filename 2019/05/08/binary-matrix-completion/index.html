@@ -88,7 +88,7 @@
 <meta property="og:description" content="IntroductionFor matrix completion problem, one basic assumption is that the underlying true matrix is low rank. Suppose the true matrix of interest is $A\in\mathbb{R}^{n_2\times n_2},$ and we partiall">
 <meta property="og:locale" content="ch/en">
 <meta property="og:image" content="http://yoursite.com/2019/05/08/binary-matrix-completion/iteration.png">
-<meta property="og:updated_time" content="2019-05-21T03:08:20.560Z">
+<meta property="og:updated_time" content="2019-05-21T03:12:11.300Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Binary Matrix Completion">
 <meta name="twitter:description" content="IntroductionFor matrix completion problem, one basic assumption is that the underlying true matrix is low rank. Suppose the true matrix of interest is $A\in\mathbb{R}^{n_2\times n_2},$ and we partiall">
@@ -367,7 +367,7 @@
 <h1 id="Simulations"><a href="#Simulations" class="headerlink" title="Simulations"></a>Simulations</h1><p>We generate some synthetic data to test the model. We set $n_1 = 1000$ and $n_2 = 1200.$ Generate $U\in\mathbb{R}^{n_1\times r}$ and $V\in\mathbb{R}^{n_2\times r}$ from standard Gaussian distribution, where $r=5.$ Then set $\Theta = UV^T.$ Then compute the propability $P = \mathrm{sigmoid}(\Theta)$ and generate $Y_{ij}\sim Bern(\Theta).$ Finally, randomly generate mask matrix elements following $M_{ij} \sim Bern(0.2).$</p>
 <p>For the estimation algorithm, we use both proximal algorithm and the accelerated proximal algorithm descibed above. The iteration step is shown in following figure.</p>
 <img src="/2019/05/08/binary-matrix-completion/iteration.png">
-<p>It seems that the accelerated algorithm performs better that the proximal algorithm.</p>
+<p>It seems that the accelerated algorithm converges faster and performs better that the proximal algorithm.</p>
 <p>Moreover, we use the soft-impute implementation in <code>fancyimpute</code> package of Python as benchmark, <a href="https://github.com/iskandr/fancyimpute" target="_blank" rel="noopener">see code</a>. The benchmark error and errors of our model is:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">The benchmark error by SoftImpute is 0.295.</span><br><span class="line">The mis-classification error is | &apos;proximal&apos; 0.239 | &apos;apgl&apos; 0.238.</span><br></pre></td></tr></table></figure></p>
 <p>The accelerated algorithm has lower test error than other candidates. However, the parameters in soft-impute algorithm are not modified.</p>
 <p>The code of this post can be found <a href="https://github.com/taozerui/tensor_completion/blob/master/tensorCom/matrix/apgl.py" target="_blank" rel="noopener">here</a>.</p>
