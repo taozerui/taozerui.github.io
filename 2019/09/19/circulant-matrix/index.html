@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT">
+  <meta name="keywords" content="matrix,">
 
 
 
@@ -79,17 +79,18 @@
 
 
 
-<meta name="description" content="Statistics, Machine Learning">
-<meta property="og:type" content="website">
-<meta property="og:title" content="tags">
-<meta property="og:url" content="http://yoursite.com/tags/index.html">
+<meta name="description" content="Toeplitz Matrix and Circulant Matrix A circulant matrix is a Toeplitz matrix with “wraparound”.— [1]  首先介绍下 Toeplitz matrix, 记为 $T\in\mathbb{R}^{n\times n}.$ 给定 $2n-1$ 个数, $r_{-n+1}, \dots, r_0, \dots">
+<meta name="keywords" content="matrix">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Circulant Matrix in MATLAB">
+<meta property="og:url" content="http://yoursite.com/2019/09/19/circulant-matrix/index.html">
 <meta property="og:site_name" content="Zerui&#39;s blog">
-<meta property="og:description" content="Statistics, Machine Learning">
+<meta property="og:description" content="Toeplitz Matrix and Circulant Matrix A circulant matrix is a Toeplitz matrix with “wraparound”.— [1]  首先介绍下 Toeplitz matrix, 记为 $T\in\mathbb{R}^{n\times n}.$ 给定 $2n-1$ 个数, $r_{-n+1}, \dots, r_0, \dots">
 <meta property="og:locale" content="ch/en">
-<meta property="og:updated_time" content="2019-04-12T03:02:53.288Z">
+<meta property="og:updated_time" content="2019-09-19T06:10:30.105Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="tags">
-<meta name="twitter:description" content="Statistics, Machine Learning">
+<meta name="twitter:title" content="Circulant Matrix in MATLAB">
+<meta name="twitter:description" content="Toeplitz Matrix and Circulant Matrix A circulant matrix is a Toeplitz matrix with “wraparound”.— [1]  首先介绍下 Toeplitz matrix, 记为 $T\in\mathbb{R}^{n\times n}.$ 给定 $2n-1$ 个数, $r_{-n+1}, \dots, r_0, \dots">
 
 
 
@@ -119,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/tags/">
+  <link rel="canonical" href="http://yoursite.com/2019/09/19/circulant-matrix/">
 
 
 
 
 
-  <title>tags | Zerui's blog</title>
+  <title>Circulant Matrix in MATLAB | Zerui's blog</title>
   
 
 
@@ -240,40 +241,149 @@
 
   <div id="posts" class="posts-expand">
     
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/19/circulant-matrix/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Zerui Tao">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Zerui's blog">
+    </span>
+
     
-    
-    <div class="post-block page">
       <header class="post-header">
 
-	<h1 class="post-title" itemprop="name headline">tags</h1>
-
-
-
-</header>
-
-      
-      
-      
-      <div class="post-body">
         
         
-          <div class="tag-cloud">
-            <div class="tag-cloud-title">
-                7 tags in total
-            </div>
-            <div class="tag-cloud-tags">
-              <a href="/tags/Commutation-matrix/" style="font-size: 12px; color: #ccc">Commutation matrix</a> <a href="/tags/Exponential-Family/" style="font-size: 12px; color: #ccc">Exponential Family</a> <a href="/tags/Matrix-completion/" style="font-size: 12px; color: #ccc">Matrix completion</a> <a href="/tags/PCA/" style="font-size: 12px; color: #ccc">PCA</a> <a href="/tags/Tensor-completion/" style="font-size: 12px; color: #ccc">Tensor completion</a> <a href="/tags/Tensor-decomposition/" style="font-size: 12px; color: #ccc">Tensor decomposition</a> <a href="/tags/matrix/" style="font-size: 12px; color: #ccc">matrix</a>
-            </div>
-          </div>
+          <h1 class="post-title" itemprop="name headline">Circulant Matrix in MATLAB</h1>
         
-      </div>
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-09-19T14:02:34+08:00">
+                2019-09-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
       
       
+
+      
+        <h1 id="Toeplitz-Matrix-and-Circulant-Matrix"><a href="#Toeplitz-Matrix-and-Circulant-Matrix" class="headerlink" title="Toeplitz Matrix and Circulant Matrix"></a>Toeplitz Matrix and Circulant Matrix</h1><blockquote>
+<p>A <em>circulant matrix</em> is a Toeplitz matrix with “wraparound”.<br>— <cite>[1]</cite></p>
+</blockquote>
+<p>首先介绍下 <em>Toeplitz matrix</em>, 记为 $T\in\mathbb{R}^{n\times n}.$ 给定 $2n-1$ 个数, $r_{-n+1}, \dots, r_0, \dots, r_{n-1}$, 那么可以生成一个 <em>Toeplitz matrix</em>, 满足 $T_{ij} = r_{j-1}.$ 其中非常重要的应用是关于 symmetric Toeplitz matrix, 即 $r_{n+i} = r_{-n-i}$ 的情形. 在 MATLAB 中, 利用 <code>toeplitz(r)</code> 函数可以直接得到 symmetric Teoplitz matrix; <code>toeplitz(r1, r2)</code> 可以得到 nonsymmetric Toeplitz matrix.</p>
+<p><em>Circulant matrix</em> 是 DFT 中非常重要的一种特殊矩阵. 顾名思义, 它是根据一组向量做轮换变换得到的. 可以看出 circulant matrix 其实是一种特殊的 nonsymmetric Toeplitz matrix. 以 5 阶的 circulant matrix 为例, 其第一行为 $r_0, r_4, r_3, r_2, r_1,$ 第一列为 $r_0, r_1, r_2, r_3, r_4.$ 所以给定向量 $r$ 时, 可以利用如下代码生成 circulant matrix.<br><figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">toeplitz</span>( r, [r(<span class="number">1</span>) fliplr(r(<span class="number">2</span>:end))] );</span><br></pre></td></tr></table></figure></p>
+<h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><p>[1] Golub G H, Van L C F. (2013). Matrix computations. Baltimore: The Johns Hopkins University Press.</p>
+
       
     </div>
     
     
     
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/matrix/" rel="tag"># matrix</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/08/binary-matrix-completion/" rel="next" title="Binary Matrix Completion">
+                <i class="fa fa-chevron-left"></i> Binary Matrix Completion
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
   </div>
 
 
@@ -306,8 +416,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -374,6 +493,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Toeplitz-Matrix-and-Circulant-Matrix"><span class="nav-number">1.</span> <span class="nav-text">Toeplitz Matrix and Circulant Matrix</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#References"><span class="nav-number">2.</span> <span class="nav-text">References</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
